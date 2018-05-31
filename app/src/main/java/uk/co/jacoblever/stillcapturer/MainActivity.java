@@ -60,8 +60,12 @@ public class MainActivity extends AppCompatActivity {
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (resultCode == RESULT_OK) {
             if (requestCode == 101) {
-                Uri selectedImageUri = data.getData();
-                mTextMessage.setText(selectedImageUri.getPath());
+                Uri videoUri = data.getData();
+                mTextMessage.setText(videoUri.getPath());
+
+                Intent myIntent = new Intent(MainActivity.this, VideoActivity.class);
+                myIntent.putExtra("videoUri", videoUri.toString());
+                MainActivity.this.startActivity(myIntent);
             }
         }
     }
