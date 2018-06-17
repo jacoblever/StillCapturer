@@ -14,6 +14,8 @@ import android.widget.TextView;
 
 public class MainActivity extends AppCompatActivity {
 
+    private final PathResolver mPathResolver = new PathResolverImplementaion();
+    private final PermissionsChecker mPermissionsChecker = new PermissionsCheckerImplementation();
     private TextView mTextMessage;
 
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
@@ -36,10 +38,14 @@ public class MainActivity extends AppCompatActivity {
         }
     };
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        mPermissionsChecker.isReadStoragePermissionGranted(this);
+        mPermissionsChecker.isWriteStoragePermissionGranted(this);
 
         mTextMessage = (TextView) findViewById(R.id.message);
         BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);
@@ -52,7 +58,7 @@ public class MainActivity extends AppCompatActivity {
                 Intent intent = new Intent();
                 intent.setType("video/*");
                 intent.setAction(Intent.ACTION_GET_CONTENT);
-                startActivityForResult(Intent.createChooser(intent,"Select Video"),101);
+                startActivityForResult(Intent.createChooser(intent, "Select Video"), 101);
             }
         });
     }
@@ -61,12 +67,15 @@ public class MainActivity extends AppCompatActivity {
         if (resultCode == RESULT_OK) {
             if (requestCode == 101) {
                 Uri videoUri = data.getData();
+
                 mTextMessage.setText(videoUri.getPath());
 
                 Intent myIntent = new Intent(MainActivity.this, VideoActivity.class);
-                myIntent.putExtra("videoUri", videoUri.toString());
+                myIntent.putExtra("videoUri", mPathResolver.getActualPath(this, videoUri));
                 MainActivity.this.startActivity(myIntent);
+
             }
         }
     }
+
 }
